@@ -1,5 +1,4 @@
-let barChart = null;
-let lineChart = null;
+let barChart , lineChart ;
 let data = [];
 let filtersApplied = false; // Track if filters have been applied
 

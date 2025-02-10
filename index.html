@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Authentication</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+* {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #f1f1f5;
+        color: #e0e0e0;
+      }
+
+      .container {
+         height: 60%;
+        max-width: 500px;
+        background: #0f245e;
+        padding: 5px;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        
+      }
+
+      h1 {
+        margin-bottom: 20px;
+        font-weight: 900;
+        color: rgb(245, 41, 75);
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        background:white;
+        color: #0f3460;
+      }
+
+      button {
+        width: 100%;
+        padding: 10px;
+        background: #e40429;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: #f31932;
+      }
+
+      p {
+        margin-top: 15px;
+        font-weight: bold;
+      }
+
+      a {
+        color: #f81c41;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+
+    </style>
+  </head>
+  <body>
+     <div class="container" id="authContainer">
+<h1 id="formTitle">Sign Up</h1>
+      <form id="authForm">
+        <input type="email" id="email" placeholder="Enter Email" required />
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter Password"
+          required
+        />
+        <button type="submit" id="authButton">Sign Up</button>
+      </form>
+      <p id="toggleText">
+        Already have an account? <a href="#" onclick="toggleForm()">Login</a>
+      </p>
+      <p><a href="#" onclick="showForgotPassword()">Forgot Password?</a></p>
+    </div>
+
+    <div class="container" id="forgotPasswordContainer" style="display: none">
+      <h2>Forgot Password</h2>
+      <form id="forgotPasswordForm">
+        <input
+          type="email"
+          id="resetEmail"
+          placeholder="Enter Your Email"
+          required
+        />
+        <button type="submit">Reset Password</button>
+      </form>
+      <p><a href="#" onclick="hideForgotPassword()">Back to Login</a></p>
+    </div>
+
+    <script>
+      let isLogin = false;
+
+      function toggleForm() {
+        isLogin = !isLogin;
+        document.getElementById("formTitle").innerText = isLogin
+          ? "Login"
+          : "Sign Up";
+        document.getElementById("authButton").innerText = isLogin
+          ? "Login"
+          : "Sign Up";
+        document.getElementById("toggleText").innerHTML = isLogin
+          ? "Don't have an account? <a href='#' onclick='toggleForm()'>Sign Up</a>"
+          : "Already have an account? <a href='#' onclick='toggleForm()'>Login</a>";
+      }
+
+      function showForgotPassword() {
+        document.getElementById("authContainer").style.display = "none";
+        document.getElementById("forgotPasswordContainer").style.display =
+          "block";
+      }
+
+      function hideForgotPassword() {
+        document.getElementById("forgotPasswordContainer").style.display =
+          "none";
+        document.getElementById("authContainer").style.display = "block";
+      }
+
+      document
+        .getElementById("authForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          handleAuth();
+        });
+
+      document
+        .getElementById("forgotPasswordForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          handleForgotPassword();
+        });
+
+      function handleAuth() {
+        let email = document.getElementById("email").value.trim();
+        let password = document.getElementById("password").value.trim();
+
+        if (!email || !password) {
+          alert("Please enter both email and password.");
+          return;
+        }
+
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+
+        if (isLogin) {
+          let user = users.find((user) => user.email === email);
+
+          if (user) {
+            if (user.password === password) {
+              alert("Login Successful ✅");
+              localStorage.setItem("isAuthenticated", "true");
+              localStorage.setItem("currentUser", email);
+              window.location.href = "dashboard.html";
+            } else {
+              alert("Incorrect Password ❌");
+            }
+          } else {
+            alert("No account found. Please sign up.");
+          }
+        } else {
+          if (users.find((user) => user.email === email)) {
+            alert("User already exists! Please login.");
+            toggleForm();
+            return;
+          }
+
+          users.push({ email, password });
+          localStorage.setItem("users", JSON.stringify(users));
+          alert("Signup Successful 🎉 Please login now.");
+          toggleForm();
+        }
+      }
+
+      function handleForgotPassword() {
+        let resetEmail = document.getElementById("resetEmail").value.trim();
+        if (!resetEmail) {
+          alert("Please enter your email.");
+          return;
+        }
+
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        let user = users.find((user) => user.email === resetEmail);
+
+        if (user) {
+          alert("Password reset instructions have been sent to your email.");
+          hideForgotPassword();
+        } else {
+          alert("No account found with that email.");
+        }
+      }
+    </script>
+  </body>
+</html>

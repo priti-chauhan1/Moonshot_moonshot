@@ -1,6 +1,6 @@
-let barChart , lineChart ;
+let barChart, lineChart;
 let data = [];
-let filtersApplied = false; // Track if filters have been applied
+let filtersApplied = false;
 
 fetch("output.json")
   .then((response) => response.json())
@@ -43,6 +43,7 @@ function createBarChart(chartData) {
 function createLineChart(chartData) {
   const ctx = document.getElementById("lineChart").getContext("2d");
   if (lineChart) lineChart.destroy();
+  Chart.register(ChartZoom);
   lineChart = new Chart(ctx, {
     type: "line",
     data: {
@@ -72,16 +73,27 @@ function createLineChart(chartData) {
       },
       plugins: {
         title: { display: true, text: "Chart Title" },
+        zoom: {
+          pan: {
+            enabled: true,
+            mode: "x",
+          },
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            mode: "x",
+          },
+        },
       },
     },
   });
 }
+
 document.getElementById("applyFilters").addEventListener("click", () => {
   if (!filtersApplied) {
-    filtersApplied = true; // First click sets the flag but doesn't update data
+    filtersApplied = true;
     return;
   }
-
   updateChartsWithFilters();
 });
 
@@ -111,7 +123,6 @@ function updateChartsWithFilters() {
   window.history.pushState({}, "", url);
 }
 
-// Detect changes in filter values and update charts only after first apply click
 document
   .querySelectorAll("#ageGroup, #genderFilter, #startDate, #endDate")
   .forEach((filter) => {
@@ -135,7 +146,7 @@ document.getElementById("resetFilters").addEventListener("click", () => {
   url.searchParams.delete("endDate");
   window.history.pushState({}, "", url);
 
-  filtersApplied = false; // Reset the flag
+  filtersApplied = false;
   initializeCharts();
 });
 

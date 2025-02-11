@@ -11,14 +11,12 @@ h1.heading {
   margin-top: 25px;
   text-align: center;
 }
-
 .container {
   background-color: #ffffff;
   padding: 5px;
   border-radius: 10px;
   box-shadow: 20px 4px 10px rgba(0, 0, 0, 0.2);
 }
-
 .controls {
   padding: 15px;
   background-color: #070a41;
